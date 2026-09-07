@@ -133,27 +133,6 @@ function loadSafetyAlerts() {
         '<p>No active safety alerts</p>';
 }
 
-// Transit Info (static data + links)
-function loadTransit() {
-    const transitHTML = `
-        <ul>
-            <li><strong>San Juan Metro (ATS)</strong>
-                <p style="font-size: 0.9rem; margin-top: 0.3rem;">
-                    <a href="https://www.dtop.gov.pr/" target="_blank">Real-time updates</a>
-                </p>
-            </li>
-            <li><strong>Publicos Status:</strong> Operating normally</li>
-            <li><strong>Luis A. Ferré Expressway:</strong> 
-                <a href="https://www.aae.pr/" target="_blank">Traffic info</a>
-            </li>
-            <li><strong>Ferry Service:</strong> 
-                <a href="https://www.aceitransportacion.com/" target="_blank">Vieques/Culebra schedule</a>
-            </li>
-        </ul>
-    `;
-    document.getElementById('transit-content').innerHTML = transitHTML;
-}
-
 // Local News (RSS feeds via CORS proxy)
 async function loadNews() {
     try {
@@ -187,40 +166,10 @@ async function loadNews() {
     }
 }
 
-// Community Events (static curated list)
-function loadEvents() {
-    const events = [
-        { name: 'Old San Juan Street Festival', date: 'Monthly, Saturdays' },
-        { name: 'El Yunque National Forest Tours', date: 'Daily' },
-        { name: 'Local Markets & Farmers Markets', date: 'Weekends in most municipalities' }
-    ];
-
-    const eventsHTML = events.map(event => `
-        <li>
-            <strong>${event.name}</strong>
-            <p style="font-size: 0.9rem; color: #666; margin-top: 0.3rem;">${event.date}</p>
-        </li>
-    `).join('');
-
-    document.getElementById('events-content').innerHTML = eventsHTML;
-}
-
-// Quick Links
+// Quick Links - Only Weather Alerts
 function loadQuickLinks() {
-    const links = [
-        { title: '🏛️ ASPIRe (Gov Portal)', url: 'https://www.puerto-rico.gov/' },
-        { title: '🚔 Police (311)', url: 'tel:311' },
-        { title: '🏥 Health Emergencies', url: 'tel:911' },
-        { title: '📞 Mayor\'s Office Locator', url: 'https://www.estado.pr.gov/' },
-        { title: '💼 Business PR', url: 'https://www.commercepuertorico.com/' },
-        { title: '🌊 Weather Alerts', url: 'https://www.weather.gov/sju/' }
-    ];
-
-    const linksHTML = links.map(link => `
-        <li><a href="${link.url}" target="_blank">${link.title}</a></li>
-    `).join('');
-
-    document.getElementById('links-content').innerHTML = `<ul>${linksHTML}</ul>`;
+    const linksHTML = `<a href="https://www.weather.gov/sju/" target="_blank">🌊 Weather Alerts</a>`;
+    document.getElementById('links-content').innerHTML = linksHTML;
 }
 
 // Initialize dashboard
@@ -229,9 +178,7 @@ function initDashboard() {
     loadWaterMonitoring();
     loadWeather();
     loadSafetyAlerts();
-    loadTransit();
     loadNews();
-    loadEvents();
     loadQuickLinks();
 
     // Refresh every 5 minutes
