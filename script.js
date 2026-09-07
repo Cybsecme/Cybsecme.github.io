@@ -174,7 +174,7 @@ async function loadNews() {
         const fallbackHTML = `
             <ul>
                 <li><a href="https://www.elnuevodia.com/" target="_blank">El Nuevo Día</a></li>
-                <li><a href="https://www.primera.pr/" target="_blank">Primera Hora</a></li>
+                <li><a href="https://www.primerahora.com/" target="_blank">Primera Hora</a></li>
                 <li><a href="https://www.metro.pr/" target="_blank">Metro.pr</a></li>
             </ul>
         `;
