@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybsecme - Puerto Rico Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Puerto Rico Dashboard</h1>
+            <p id="current-time" class="current-time"></p>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Weather Section -->
+            <section class="card">
+                <h2>🌤️ Weather</h2>
+                <div id="weather-content" class="loading">Loading weather...</div>
+            </section>
+
+            <!-- Safety Alerts Section -->
+            <section class="card">
+                <h2>⚠️ Safety Alerts</h2>
+                <div id="safety-content" class="loading">Loading alerts...</div>
+            </section>
+
+            <!-- Transit Info Section -->
+            <section class="card">
+                <h2>🚌 Transit Info</h2>
+                <div id="transit-content" class="loading">Loading transit...</div>
+            </section>
+
+            <!-- Local News Section -->
+            <section class="card">
+                <h2>📰 Local News</h2>
+                <div id="news-content" class="loading">Loading news...</div>
+            </section>
+
+            <!-- Community Events Section -->
+            <section class="card">
+                <h2>🎉 Community Events</h2>
+                <div id="events-content" class="loading">Loading events...</div>
+            </section>
+
+            <!-- Quick Links Section -->
+            <section class="card">
+                <h2>🔗 Quick Links</h2>
+                <div id="links-content" class="loading">Loading links...</div>
+            </section>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
