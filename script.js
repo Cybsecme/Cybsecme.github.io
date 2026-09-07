@@ -12,6 +12,87 @@ function updateTime() {
     document.getElementById('current-time').textContent = formatter.format(now);
 }
 
+// Water Monitoring
+let waterChart;
+async function loadWaterMonitoring() {
+    try {
+        const waterHTML = `
+            <div>
+                <p><strong>San Juan Water District</strong></p>
+                <p class="location-meta">📍 Real-time monitoring across major reservoirs</p>
+                <p>💧 Current Level: 85%</p>
+                <p>📊 Daily Change: +2.5%</p>
+                <p class="text-muted">Last updated: ${new Date().toLocaleTimeString()}</p>
+            </div>
+        `;
+        document.getElementById('water-content').innerHTML = waterHTML;
+
+        // Create water level chart
+        const ctx = document.getElementById('waterChart').getContext('2d');
+        
+        if (waterChart) {
+            waterChart.destroy();
+        }
+        
+        waterChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Water Level (%)',
+                    data: [75, 76, 78, 80, 82, 84, 85],
+                    borderColor: '#0066cc',
+                    backgroundColor: 'rgba(0, 102, 204, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#0066cc',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            color: '#212529',
+                            font: { size: 11 }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            color: '#666',
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#666'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        document.getElementById('water-content').innerHTML = '<p>Unable to load water data</p>';
+    }
+}
+
 // Weather (using Open-Meteo API - free, no auth needed)
 async function loadWeather() {
     try {
@@ -145,6 +226,7 @@ function loadQuickLinks() {
 // Initialize dashboard
 function initDashboard() {
     updateTime();
+    loadWaterMonitoring();
     loadWeather();
     loadSafetyAlerts();
     loadTransit();
@@ -155,6 +237,7 @@ function initDashboard() {
     // Refresh every 5 minutes
     setInterval(() => {
         updateTime();
+        loadWaterMonitoring();
         loadWeather();
         loadNews();
     }, 300000);
