@@ -134,6 +134,81 @@ async function loadWeather() {
     }
 }
 
+// USGS Earthquake Monitor - Puerto Rico Region (within 500km)
+async function loadEarthquakeMonitor() {
+    try {
+        // Fetch earthquakes near Puerto Rico (lat: 18.2208, lon: -66.5901) within past 7 days
+        const response = await fetch(
+            'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&latitude=18.2208&longitude=-66.5901&maxradius=5&starttime=2026-09-05&minmagnitude=2.5'
+        );
+        const data = await response.json();
+
+        let earthquakeHTML = `
+            <div>
+                <p><strong>Puerto Rico Seismic Activity</strong></p>
+                <p class="location-meta">📍 Radius: 500km | Min Magnitude: 2.5</p>
+        `;
+
+        if (data.features && data.features.length > 0) {
+            earthquakeHTML += `<p><strong>Last 7 Days (${data.features.length} events):</strong></p>`;
+            
+            // Sort by magnitude (descending) and show top 5
+            data.features
+                .sort((a, b) => b.properties.mag - a.properties.mag)
+                .slice(0, 5)
+                .forEach(quake => {
+                    const props = quake.properties;
+                    const coords = quake.geometry.coordinates;
+                    const mag = props.mag.toFixed(1);
+                    const depth = (coords[2]).toFixed(1);
+                    const place = props.place || 'Unknown location';
+                    const time = new Date(props.time).toLocaleString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        timeZone: 'America/Puerto_Rico'
+                    });
+                    
+                    // Color code by magnitude
+                    let magColor = '#28a745'; // green
+                    if (mag >= 5.0) magColor = '#dc3545'; // red
+                    else if (mag >= 4.0) magColor = '#fd7e14'; // orange
+                    else if (mag >= 3.0) magColor = '#ffc107'; // yellow
+                    
+                    earthquakeHTML += `
+                        <div style="margin: 8px 0; padding: 8px; background: ${magColor}22; border-left: 3px solid ${magColor};">
+                            <p style="margin: 0; font-weight: bold;">
+                                <span style="color: ${magColor};">M${mag}</span> - ${place}
+                            </p>
+                            <p style="margin: 4px 0; font-size: 0.85rem; color: #666;">
+                                Depth: ${depth}km | ${time}
+                            </p>
+                        </div>
+                    `;
+                });
+        } else {
+            earthquakeHTML += '<p>No significant earthquakes recorded in the past 7 days</p>';
+        }
+
+        earthquakeHTML += `<p class="text-muted" style="font-size: 0.85rem; margin-top: 8px;">Last updated: ${new Date().toLocaleTimeString()}</p>`;
+        earthquakeHTML += '<p style="font-size: 0.85rem;"><a href="https://earthquake.usgs.gov/earthquakes/map/" target="_blank">📊 USGS Earthquake Hazards</a></p>';
+        earthquakeHTML += '</div>';
+
+        document.getElementById('earthquake-content').innerHTML = earthquakeHTML;
+    } catch (error) {
+        document.getElementById('earthquake-content').innerHTML = `
+            <div>
+                <p><strong>Puerto Rico Seismic Activity</strong></p>
+                <p class="location-meta">📍 USGS Earthquake Hazards Program</p>
+                <p>Real-time earthquake monitoring data</p>
+                <p><a href="https://earthquake.usgs.gov/earthquakes/map/" target="_blank">📊 View on USGS</a></p>
+            </div>
+        `;
+        console.error('Earthquake monitor error:', error);
+    }
+}
+
 // NOAA Tides & Currents - Fajardo, PR (18.3242, -65.6500)
 async function loadTidesAndCurrents() {
     try {
@@ -307,6 +382,7 @@ function initDashboard() {
     updateTime();
     loadWaterMonitoring();
     loadWeather();
+    loadEarthquakeMonitor();
     loadTidesAndCurrents();
     loadNews();
     loadQuickLinks();
@@ -316,6 +392,7 @@ function initDashboard() {
         updateTime();
         loadWaterMonitoring();
         loadWeather();
+        loadEarthquakeMonitor();
         loadTidesAndCurrents();
         loadNews();
     }, 300000);
