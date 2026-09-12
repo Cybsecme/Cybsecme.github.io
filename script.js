@@ -285,6 +285,7 @@ async function loadNews() {
                 <li><a href="https://www.elnuevodia.com/" target="_blank">El Nuevo Día</a></li>
                 <li><a href="https://www.primerahora.com/" target="_blank">Primera Hora</a></li>
                 <li><a href="https://www.metro.pr/" target="_blank">Metro.pr</a></li>
+                <li><a href="https://www.emisoras-puertorico.com/" target="_blank">Emisoras PR</a></li>
             </ul>
         `;
         document.getElementById('news-content').innerHTML = fallbackHTML;
@@ -341,11 +342,6 @@ function loadQuickLinks() {
             screenshot: 'https://zoom.earth/img/og-image.png'
         },
         {
-            title: 'Emisoras PR',
-            url: 'https://www.emisoras-puertorico.com/',
-            screenshot: 'https://www.emisoras-puertorico.com/images/og-image.png'
-        },
-        {
             title: 'A Soft Murmur',
             url: 'https://asoftmurmur.com/',
             screenshot: 'https://asoftmurmur.com/images/og-image.png'
@@ -359,6 +355,11 @@ function loadQuickLinks() {
             title: 'Weather Alerts',
             url: 'https://www.weather.gov/sju/',
             screenshot: 'https://www.weather.gov/static/media/nws-logo-large.png'
+        },
+        {
+            title: 'The Cyberwire',
+            url: 'https://thecyberwire.com/',
+            screenshot: 'https://thecyberwire.com/images/cyberwire-logo.png'
         }
     ];
 
