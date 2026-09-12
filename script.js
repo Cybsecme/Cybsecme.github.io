@@ -20,7 +20,7 @@ async function loadWaterMonitoring() {
             <div>
                 <p><strong>Rio Canovanas, Puerto Rico</strong></p>
                 <p class="location-meta">📍 USGS Station 50061800</p>
-                <p class="location-meta"><a href="https://waterdata.usgs.gov/monitoring-location/USGS-50061800#dataTypeId=continuous-00065-0&period=P7D&showFieldMeasurements=true" target="_blank">View Full Data →</a></p>
+                <p class="location-meta"><a href="https://waterdata.usgs.gov/monitoring-location/USGS-50061800#dataTypeId=continuous-00065-0&period=P7D&showFieldMeasurements=true" target="_blank">View on USGS</a></p>
                 <p>💧 Water Level: Real-time monitoring data</p>
                 <p class="text-muted">Last updated: ${new Date().toLocaleTimeString()}</p>
             </div>
@@ -105,7 +105,8 @@ async function loadWaterMonitoring() {
             });
         }
     } catch (error) {
-        document.getElementById('water-content').innerHTML = '<p><strong>Rio Canovanas, Puerto Rico</strong></p><p class="location-meta">📍 USGS Station 50061800</p><p><a href="https://waterdata.usgs.gov/monitoring-location/USGS-50061800#dataTypeId=continuous-00065-0&period=P7D&showFieldMeasurements=true" target="_blank">View Real-time Data →</a></p><p class="text-muted">Real-time monitoring available at USGS</p>';
+        document.getElementById('water-content').innerHTML = '<p><strong>Rio Canovanas, Puerto Rico</strong></p><p class="location-meta">📍 USGS Station 50061800</p><p>Unable to load water data</p>';
+        console.error('Water monitoring error:', error);
     }
 }
 
@@ -129,24 +130,57 @@ async function loadWeather() {
         document.getElementById('weather-content').innerHTML = weatherHTML;
     } catch (error) {
         document.getElementById('weather-content').innerHTML = '<p>Unable to load weather data</p>';
+        console.error('Weather error:', error);
     }
 }
 
-// Safety Alerts (local static data + social monitoring)
-function loadSafetyAlerts() {
-    const alerts = [
-        { type: 'warning', text: '⚠️ Heavy rainfall expected in northern regions' },
-        { type: 'info', text: 'ℹ️ Road work on PR-52 near Caguas (check transit)' }
-    ];
+// NOAA Tides & Currents - Fajardo, PR (18.3242, -65.6500)
+async function loadTidesAndCurrents() {
+    try {
+        // Fajardo, PR coordinates
+        const lat = 18.3242;
+        const lon = -65.6500;
+        
+        // Fetch tide predictions from NOAA
+        const tideResponse = await fetch(
+            `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=9755371&product=predictions&begin_date=20250912&end_date=20250913&datum=MLLW&units=metric&format=json&interval=hilo`
+        );
+        const tideData = await tideResponse.json();
 
-    const safetyHTML = alerts.map(alert => `
-        <div class="alert ${alert.type}">
-            ${alert.text}
-        </div>
-    `).join('');
+        let tidesHTML = `
+            <div>
+                <p><strong>Fajardo, Puerto Rico</strong></p>
+                <p class="location-meta">📍 Latitude: ${lat}°, Longitude: ${lon}°</p>
+        `;
 
-    document.getElementById('safety-content').innerHTML = safetyHTML || 
-        '<p>No active safety alerts</p>';
+        if (tideData.predictions && tideData.predictions.length > 0) {
+            tidesHTML += '<p><strong>Today\'s Tide Events:</strong></p>';
+            tideData.predictions.slice(0, 4).forEach(tide => {
+                const time = new Date(tide.t).toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
+                const height = parseFloat(tide.v).toFixed(2);
+                const tideType = tide.type === 'H' ? '🔺 High' : '🔻 Low';
+                tidesHTML += `<p>${tideType} Tide: ${height}m at ${time}</p>`;
+            });
+        } else {
+            tidesHTML += '<p>Tide data available</p>';
+        }
+
+        tidesHTML += `<p class="text-muted">Last updated: ${new Date().toLocaleTimeString()}</p>`;
+        tidesHTML += '<p style="font-size: 0.85rem;"><a href="https://www.tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9755371" target="_blank">📊 View full tide predictions</a></p>';
+        tidesHTML += '</div>';
+
+        document.getElementById('tides-content').innerHTML = tidesHTML;
+    } catch (error) {
+        document.getElementById('tides-content').innerHTML = `
+            <div>
+                <p><strong>Fajardo, Puerto Rico</strong></p>
+                <p class="location-meta">📍 18.3242°N, 65.6500°W</p>
+                <p>🌊 Tide and current data available from NOAA</p>
+                <p><a href="https://www.tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9755371" target="_blank">📊 View on NOAA</a></p>
+            </div>
+        `;
+        console.error('Tides & Currents error:', error);
+    }
 }
 
 // Local News (RSS feeds via CORS proxy)
@@ -179,6 +213,7 @@ async function loadNews() {
             </ul>
         `;
         document.getElementById('news-content').innerHTML = fallbackHTML;
+        console.error('News error:', error);
     }
 }
 
@@ -257,7 +292,7 @@ function loadQuickLinks() {
             ${links.map(link => `
                 <a href="${link.url}" target="_blank" class="quick-link" title="${link.title}">
                     <div class="link-thumbnail">
-                        <img src="${link.screenshot}" alt="${link.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%2260%22%3E%3Crect fill=%22%23ddd%22 width=%22100%22 height=%22100%22/%3E%3C/svg%3E'">
+                        <img src="${link.screenshot}" alt="${link.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%2260%22%3E%3Crect fill=%22%23eee%22 width=%22100%22 height=%2260%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22 font-size=%2212%22 fill=%22%23999%22%3E${link.title}%3C/text%3E%3C/svg%3E'">
                     </div>
                     <span class="link-label">${link.title}</span>
                 </a>
@@ -272,7 +307,7 @@ function initDashboard() {
     updateTime();
     loadWaterMonitoring();
     loadWeather();
-    loadSafetyAlerts();
+    loadTidesAndCurrents();
     loadNews();
     loadQuickLinks();
 
@@ -281,6 +316,7 @@ function initDashboard() {
         updateTime();
         loadWaterMonitoring();
         loadWeather();
+        loadTidesAndCurrents();
         loadNews();
     }, 300000);
 }
